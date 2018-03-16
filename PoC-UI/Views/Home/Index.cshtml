@@ -1,0 +1,192 @@
+﻿@using PoC_UI.Models
+@model PoCViewModel
+@{
+    ViewBag.Title = "Optimize Prime";
+}
+
+<div class="jumbotron">
+    <h1>Proof of concept</h1>
+    <p class="lead">Alerts genereren</p>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h1>Test data klaar zetten</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <h2>1. Data syncen</h2>
+        <div class="alert alert-success" id="success1" style="display:none;">
+            Data is correct weggeschreven naar de databank.
+        </div>
+        <div id="divProcessing">
+            <p>Processing, please wait . . .</p>
+        </div>
+        <p>
+            Zal json bestand (textgain.json) omzetten in onze domein objecten "Post" en wegschrijven naar een databank.
+        </p>
+        <p><button class="btn btn-default" type="button" onclick="syncData()">Sync data</button></p>
+    </div>
+    <div class="col-md-6">
+        <h2>2. Posts linken aan entiteit</h2>
+        <div class="alert alert-success" id="success2" style="display:none;">
+            Posts zijn gekoppeld aan de entiteiten!
+        </div>
+        <p>
+            Zal over elke posts die in onze databank zit kijken bij welke entiteit deze kan behoren en linked ze.
+        </p>
+        <p><button class="btn btn-default" type="button" onclick="linkEntities()">Link</button></p>
+    </div>
+</div>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <h2>Overzicht alerts</h2>
+        <p>Dit zijn de 'notificiaties' die de gebruikers hebben ingesteld en waarvan ze een alert van willen ontvangen wanneer de voorwaarden zijn overschreden.</p>
+        <div class="alert alert-success" id="success3" style="display:none;">
+            Alle alerts zijn nagekeken. Vernieuw de pagina.
+        </div>
+        <table class="table">
+            <tr>
+                <th>
+                    AlertId
+                </th>
+                <th>
+                    MinWaarde
+                </th>
+                <th>
+                    Triggered
+                </th>
+                <th>
+                    User
+                </th>
+                <th>
+                    soort
+                </th>
+                <th>
+                    Voorwaarde
+                </th>
+                <th>
+                    Soort Alert
+                </th>
+            </tr>
+
+            @foreach (var item in Model.Alerts)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AlertId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MinTrendWaarde)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Triggered)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.Naam)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.voorwaarde)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Type)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PlatformType)
+                </td>
+            </tr>
+    }
+
+        </table>
+        <button class="btn btn-primary" type="button" onclick="genereerAlerts()">Genereer Alerts</button>
+    </div>
+    <div class="col-md-4">
+        <h2>
+            Trend types:
+        </h2>
+        <ul>
+            <li>
+                STERKOPWAARDS - Stijging posts vs vorige periode met 30%
+            </li>
+            <li>
+                STIJGEND - Stijging posts vs vorige periode op basis van de gezette waarde (minTrendwaarde).
+            </li>
+            <li>
+                DALEND - Zelfde als stijging maar er word gekeken naar aantal posts dat er minder is.
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <h2>
+            Overzicht posts per Entiteit
+        </h2>
+        <table class="table">
+            <tr>
+                <th>
+                    EntiteitId
+                </th>
+                <th>
+                   Naam
+                </th>
+                <th>
+                    Totaal # posts
+                </th>
+           </tr>
+                @foreach (var item in Model.Entiteiten)
+    {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EntiteitId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Voornaam) @Html.DisplayFor(modelItem => item.Achternaam)
+                </td>
+                <td>
+                    @Html.Raw(item.Posts.Count)
+                </td>
+            </tr>
+    }
+        </table>
+
+    </div>
+</div>
+
+
+
+@section Scripts{
+    <script>
+        $("#divProcessing").hide();
+        function syncData() {
+            $("#divProcessing").show();
+            $.ajax("/Post/SyncData"
+                , { type: 'get', dataType: 'json' })
+                .fail(function () {
+                    $("#success1").show();
+                    $("#divProcessing").hide();
+                });
+        }
+
+
+        function linkEntities() {
+            $.ajax("/Entiteit/LinkPost"
+                , { type: 'get', dataType: 'json' })
+                .fail(function () {
+                    $("#success2").show();
+                });
+        }
+
+        function genereerAlerts() {
+            $.ajax("/Account/GenereerAlerts"
+                , { type: 'get', dataType: 'json' })
+                .fail(function () {
+                    $("#success3").show();
+                });
+        }
+    </script>
+}

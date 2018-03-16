@@ -1,0 +1,37 @@
+﻿@model IEnumerable<Domain.Alert.Alert>
+
+@{
+    ViewBag.Title = "ShowAlerts";
+}
+
+<h2>Alerts overview</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.AlertId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.MinTrendWaarde)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Triggered)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.AlertId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.MinTrendWaarde)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Triggered)
+        </td>
+    </tr>
+}
+
+</table>
