@@ -61,4 +61,4 @@
 #*.PDF   diff=astextplain
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
-PoC-UI/Content/* linguist-vendored
+PoC-UI/* linguist-vendored
